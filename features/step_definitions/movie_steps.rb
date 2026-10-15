@@ -19,9 +19,9 @@ end
 Then(/^I should see "(.*)" before "(.*)" in the movie list$/) do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.body is the entire content of the page as a string.
-  pending "Fill in this step in movie_steps.rb"
+  expect(page.body).to match(/#{e1}.*#{e2}/m)
+  # pending "Fill in this step in movie_steps.rb"
 end
-
 
 # Make it easier to express checking or unchecking several boxes at once
 #  "When I check only the following ratings: PG, G, R"
@@ -30,17 +30,36 @@ When(/I check the following ratings: (.*)/) do |rating_list|
   # HINT: use String#split to split up the rating_list, then
   #   iterate over the ratings and reuse the "When I check..." or
   #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
-  pending "Fill in this step in movie_steps.rb"
+  list = rating_list.split(",").map(&:strip)
+  Movie.all_ratings.each do |rating|
+    if list.include?(rating)
+      check(rating)
+    else
+      uncheck(rating)
+    end
+  end
+  # pending "Fill in this step in movie_steps.rb"
 end
 
 Then(/^I should (not )?see the following movies: (.*)$/) do |no, movie_list|
   # Take a look at web_steps.rb Then /^(?:|I )should see "([^"]*)"$/
-  pending "Fill in this step in movie_steps.rb"
+  list = movie_list.split(",").map(&:strip)
+  list.each do |movie|
+    if no
+      expect(page.body).not_to have_content(movie)
+    else
+      expect(page.body).to have_content(movie)
+    end
+  end
+  # pending "Fill in this step in movie_steps.rb"
 end
 
 Then(/^I should see all the movies$/) do
   # Make sure that all the movies in the app are visible in the table
-  pending "Fill in this step in movie_steps.rb"
+  Movie.all.each do |movie|
+    expect(page.body).to have_content(movie.title)
+  end
+  # pending "Fill in this step in movie_steps.rb"
 end
 
 ### Utility Steps Just for this assignment.
